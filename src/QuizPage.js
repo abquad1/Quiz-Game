@@ -6,18 +6,20 @@ function QuizPage() {
 const [currentPage,setCurrentPage] = useState(0);
 const [selectedAnswer,setSelectedAnswer] = useState('');
 const [showComment, setShowComment] = useState('')
-const [showResult, setShowResult] = useState(true)
+// const [showResult, setShowResult] = useState(true)
 
 // const [selectedAnswer,setSelectedAnswer] = useState(Array(data.length).fill(null));
 const [score,setScore] = useState(0);
+const [isAnswered, setIsAnswered] = useState(false)
 
 const handleChange = (e) =>{
     
     setSelectedAnswer(e.target.value);
+    setIsAnswered(true) //disable options after selections
     if (e.target.value === data[currentPage].correctAnswer) {
-        setShowComment("correct!")
+        setShowComment("Correct!")
     } else{
-        setShowComment("oops! Incorrect!")
+        setShowComment("Oops! Incorrect!")
     }
     
 }
@@ -26,34 +28,34 @@ const handleChange = (e) =>{
 const handleNext = () =>{
 
     if (selectedAnswer === data[currentPage].correctAnswer) {
-        setScore(score + 1)
+        const percent = score + 1 *20
+        setScore(percent) 
     }
 
     if (currentPage < data.length) {
         setCurrentPage((prev ) => prev + 1); 
         setShowComment("")
-        setShowResult(showResult)
+    setIsAnswered(false) //disable options after selections
+
+        // setShowResult('')
+        // console.log(setShowResult)
         
     }
      
     
 }
 
-if (currentPage === data.length-1) {
+if (currentPage === data.length - 1) {
         document.getElementById('question').textContent = "";
         document.getElementById('instruction').textContent = "";
         document.getElementById('btn').textContent = ""
-        document.getElementById('score').textContent = "Your Total Score: " + score + "/" + (data.length - 1)
-        document.getElementById('score').style.fontSize = "48px";
-        document.getElementById('score').style.textAlign = "center"
-        document.getElementById('score').style.lineHeight = "50px"
-
-
-
         
     }
 
-
+    if (currentPage === data.length -2) {
+        document.getElementById('button').innerText = "Submit"
+        
+    }
 
 const currentData = data[currentPage]
 const LastQuestion = currentPage === data.length - 1;
@@ -88,6 +90,7 @@ const LastQuestion = currentPage === data.length - 1;
                         <input type='radio' value={option}  className='mt-4 ' 
                         checked = {selectedAnswer === option}
                         onChange={ handleChange }
+                        disabled={isAnswered}
                         /> {option}
                     </label>
                     
@@ -95,14 +98,16 @@ const LastQuestion = currentPage === data.length - 1;
                 ))}
             </div>                                  
 
-            <div id='comment' className={`italic mt-4 text-lg ${showComment? "block" : "hidden "}`}>{showComment}</div>
-             <div className={`italic mt-4 text-lg ${showResult === true ? "block" : "hidden"} `} id='score'>{score}/{(data.length - 1)}</div>
+            <div id='comment' className={`italic mt-4 text-2xl text-lime-500 ${showComment? "block" : "hidden "}`}>{showComment}</div>
+             {LastQuestion && (<div className='italic mt-4 text-4xl text-center ' id='score'>Your Total Score is:
+              <span className='text-lime-500 text-5xl p-10'><br/>{score}% </span>
+              </div>)}
 
             <div className='flex justify-between w-full pt-8' id='btn'> 
-                <button type='button' 
+                <button type='button' id='button' 
                 className='rounded-md bg-lime-500 h-[50px] w-[100px] text-slate-50 font-bold text-lg '
                 onClick={handleNext} disabled={LastQuestion} 
-                    >Submit
+                    >Next
                 </button>
             </div>
 
